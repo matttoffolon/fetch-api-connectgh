@@ -21,7 +21,7 @@
 
 </head>
 
-<body>
+<body onload="init();">
 
 
     <div class="container">
@@ -32,6 +32,7 @@
             </div>
             <div class="card-body">
                 <h2 id="data"></h2>
+                <canvas id="compass" width="200" height="200"></canvas>
             </div>
             <div class="card-footer bg-info">
                 <p id="lastUpdate"></p>
@@ -46,37 +47,97 @@
 
 
     </div>
-    <div id="data"></div>
 
-    <script type="text/Javascript">
-
-
+    <script type="text/javascript">
+        var img = null,
+            needle = null,
+            ctx = null,
+            degrees = null;
 
 
         var connectGHapi =
-        "https://www.connectgh.com.au/api/records/1.0/search/?dataset=weather-station-status&q=&rows=1&sort=time&facet=deviceid&facet=windcompassdirection&facet=location&refine.location=Hamilton";
+            "https://www.connectgh.com.au/api/records/1.0/search/?dataset=weather-station-status&q=&rows=1&sort=time&facet=deviceid&facet=windcompassdirection&facet=location&refine.location=Hamilton";
         var weatherInfo = document.getElementById("data");
         var lastUpdate = document.getElementById("lastUpdate");
 
         fetch(connectGHapi)
-        .then((response) => response.json())
-        .then((data) => {
-            let info = data.records;
-            return info.map((records) => {
+            .then((response) => response.json())
+            .then((data) => {
+                let info = data.records;
+                return info.map((records) => {
 
-            
-            weatherInfo.innerHTML = `The current temp is: ${records.fields.airtemp}`;
-            
-            var date = new Date(records.fields.time);
-            lastUpdate.innerHTML = `Last Updated at ${date.toString()}`;
+                    let airTemp = records.fields.airtemp;
+                    let hPa = records.fields.atmosphericpressure;
+                    let windSpeed = records.fields.windspeed;
+                    degrees = records.fields.winddirection;
 
+                    weatherInfo.innerHTML = `The current temp is: ${records.fields.airtemp}&#8451;`
+
+                    var date = new Date(records.fields.time);
+                    lastUpdate.innerHTML = `Last Updated at ${date.toString()}`;
+
+                });
             });
-        });
 
 
 
 
+        function clearCanvas() {
+            // clear canvas
+            ctx.clearRect(0, 0, 200, 200);
+        }
 
+        function draw() {
+
+            clearCanvas();
+
+            // Draw the compass onto the canvas
+            ctx.drawImage(img, 0, 0);
+
+            // Save the current drawing state
+            ctx.save();
+
+            // Now move across and down half the 
+            ctx.translate(100, 100);
+
+            // Rotate around this point
+            ctx.rotate(degrees * (Math.PI / 180));
+
+            // Draw the image back and up
+            ctx.drawImage(needle, -100, -100);
+
+            // Restore the previous drawing state
+            ctx.restore();
+
+            // Increment the angle of the needle by 5 degrees
+            //degrees += 5;
+        }
+
+        function imgLoaded() {
+            // Image loaded event complete.  Start the timer
+            setInterval(draw, 100);
+        }
+
+        function init() {
+            // Grab the compass element
+            var canvas = document.getElementById('compass');
+
+            // Canvas supported?
+            if (canvas.getContext('2d')) {
+                ctx = canvas.getContext('2d');
+
+                // Load the needle image
+                needle = new Image();
+                needle.src = 'needle.png';
+
+                // Load the compass image
+                img = new Image();
+                img.src = 'compass.png';
+                img.onload = imgLoaded;
+            } else {
+                alert("Canvas not supported!");
+            }
+        }
     </script>
 
 
