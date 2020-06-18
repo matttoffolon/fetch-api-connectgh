@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Hamilton Weather</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Dosis:400,700" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+
+</head>
+
+<body>
+
+
+    <div class="container">
+
+        <div class="card">
+            <div class="card-header bg-info">
+                <h2>Hamilton Weather</h2>
+            </div>
+            <div class="card-body">
+                <h2 id="data"></h2>
+            </div>
+            <div class="card-footer bg-info">
+                <p id="lastUpdate"></p>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+
+    </div>
+    <div id="data"></div>
+
+    <script type="text/Javascript">
+
+
+
+
+        var connectGHapi =
+        "https://www.connectgh.com.au/api/records/1.0/search/?dataset=weather-station-status&q=&rows=1&sort=time&facet=deviceid&facet=windcompassdirection&facet=location&refine.location=Hamilton";
+        var weatherInfo = document.getElementById("data");
+        var lastUpdate = document.getElementById("lastUpdate");
+
+        fetch(connectGHapi)
+        .then((response) => response.json())
+        .then((data) => {
+            let info = data.records;
+            return info.map((records) => {
+
+            
+            weatherInfo.innerHTML = `The current temp is: ${records.fields.airtemp}`;
+            
+            var date = new Date(records.fields.time);
+            lastUpdate.innerHTML = `Last Updated at ${date.toString()}`;
+
+            });
+        });
+
+
+
+
+
+    </script>
+
+
+</body>
+
+</html>
