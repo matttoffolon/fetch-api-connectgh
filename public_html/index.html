@@ -69,7 +69,12 @@
                     let airTemp = records.fields.airtemp;
                     let hPa = records.fields.atmosphericpressure;
                     let windSpeed = records.fields.windspeed;
+                    let windDir = records.fields.windcompassdirection;
+
+
                     degrees = records.fields.winddirection;
+
+
 
                     weatherInfo.innerHTML = `The current temp is: ${records.fields.airtemp}&#8451;`
 
@@ -137,6 +142,15 @@
             } else {
                 alert("Canvas not supported!");
             }
+        }
+
+
+        var map;
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: -34.397, lng: 150.644 },
+                zoom: 8
+            });
         }
     </script>
 
